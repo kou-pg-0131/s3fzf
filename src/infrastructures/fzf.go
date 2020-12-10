@@ -6,7 +6,7 @@ import (
 
 // IFZF .
 type IFZF interface {
-	Find(list interface{}, itemFunc func(int) string) (int, error)
+	Find(list interface{}, itemFunc func(int) string, previewFunc func(int, int, int) string) (int, error)
 }
 
 // FZF .
@@ -18,8 +18,8 @@ func NewFZF() IFZF {
 }
 
 // Find .
-func (f *FZF) Find(list interface{}, itemFunc func(int) string) (int, error) {
-	i, err := fzf.Find(list, itemFunc, fzf.WithHotReload())
+func (f *FZF) Find(list interface{}, itemFunc func(int) string, previewFunc func(int, int, int) string) (int, error) {
+	i, err := fzf.Find(list, itemFunc, fzf.WithHotReload(), fzf.WithPreviewWindow(previewFunc))
 	if err != nil {
 		return -1, err
 	}

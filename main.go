@@ -28,6 +28,11 @@ func main() {
 
 	i, err := fzf.Find(&bs, func(i int) string {
 		return *bs[i].Name
+	}, func(i, w, h int) string {
+		if i == -1 {
+			return ""
+		}
+		return fmt.Sprintf("%s\n\nCreationDate: %s", *bs[i].Name, *bs[i].CreationDate)
 	})
 	if err != nil {
 		panic(err)
