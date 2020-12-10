@@ -1,4 +1,4 @@
-module github.com/kou-pg-0131/s3ls
+module github.com/kou-pg-0131/s3fzf
 
 go 1.15
 

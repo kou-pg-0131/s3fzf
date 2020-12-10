@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kou-pg-0131/s3ls/src/cmd"
+	"github.com/kou-pg-0131/s3fzf/src/cmd"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "s3ls"
+	app.Name = "s3fzf"
 	app.Usage = "usage"          // TODO
 	app.UsageText = "usage text" // TODO
 	app.HideHelpCommand = true
