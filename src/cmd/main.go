@@ -30,6 +30,30 @@ func New() *Command {
 
 // Do ...
 func (c *Command) Do() error {
+	b, err := c.findBucket()
+	if err != nil {
+		return err
+	}
+
+	o, err := c.findObject(*b.Name)
+	if err != nil {
+		return err
+	}
+
+	f, err := c.s3Client.GetObject(*b.Name, *o.Key)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(f)
+
+	fmt.Print(buf.String())
+	return nil
+}
+
+func (c *Command) findBucket() (*s3.Bucket, error) {
 	bs := []*s3.Bucket{}
 
 	go func() {
@@ -50,13 +74,17 @@ func (c *Command) Do() error {
 		return fmt.Sprintf("%s\n\nCreationDate: %s", *bs[i].Name, *bs[i].CreationDate)
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	return bs[i], nil
+}
+
+func (c *Command) findObject(bucket string) (*s3.Object, error) {
 	os := []*s3.Object{}
 
 	go func() {
-		reg, err := c.s3Client.GetRegion(*bs[i].Name)
+		reg, err := c.s3Client.GetRegion(bucket)
 		if err != nil {
 			panic(err)
 		}
@@ -65,7 +93,7 @@ func (c *Command) Do() error {
 
 		tkn := (*string)(nil)
 		for {
-			resp, ntkn, err := c.s3Client.ListObjects(*bs[i].Name, tkn)
+			resp, ntkn, err := c.s3Client.ListObjects(bucket, tkn)
 			if err != nil {
 				panic(err)
 			}
@@ -80,28 +108,18 @@ func (c *Command) Do() error {
 		}
 	}()
 
-	j, err := c.fzf.Find(&os, func(j int) string {
-		return *os[j].Key
-	}, func(j, w, h int) string {
-		if j == -1 {
+	i, err := c.fzf.Find(&os, func(i int) string {
+		return *os[i].Key
+	}, func(i, w, h int) string {
+		if i == -1 {
 			return ""
 		}
 
-		return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[j].Key, humanize.Bytes(uint64(*os[j].Size)), *os[j].LastModified)
+		return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	f, err := c.s3Client.GetObject(*bs[i].Name, *os[j].Key)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(f)
-
-	fmt.Print(buf.String())
-	return nil
+	return os[i], nil
 }
