@@ -13,13 +13,25 @@ func main() {
 	s3c := infrastructures.NewS3Client(
 		s3.New(session.New(), aws.NewConfig().WithRegion("us-east-1")),
 	)
+	fzf := infrastructures.NewFZF()
 
-	bs, err := s3c.ListBuckets()
+	bs := []*s3.Bucket{}
+
+	go func() {
+		resp, err := s3c.ListBuckets()
+		if err != nil {
+			panic(err)
+		}
+
+		bs = resp
+	}()
+
+	i, err := fzf.Find(&bs, func(i int) string {
+		return *bs[i].Name
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	for _, b := range bs {
-		fmt.Printf("%#v\n", b)
-	}
+	fmt.Println(*bs[i])
 }
