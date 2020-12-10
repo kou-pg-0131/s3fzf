@@ -38,5 +38,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(*bs[i])
+	reg, err := s3c.GetRegion(*bs[i].Name)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(reg)
 }

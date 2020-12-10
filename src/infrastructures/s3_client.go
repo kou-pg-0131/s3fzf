@@ -8,6 +8,7 @@ import (
 // IS3Client .
 type IS3Client interface {
 	ListBuckets() ([]*s3.Bucket, error)
+	GetRegion(bucket string) (string, error)
 }
 
 // S3Client .
@@ -27,4 +28,20 @@ func (c *S3Client) ListBuckets() ([]*s3.Bucket, error) {
 		return nil, err
 	}
 	return resp.Buckets, nil
+}
+
+// GetRegion .
+func (c *S3Client) GetRegion(bucket string) (string, error) {
+	resp, err := c.s3API.GetBucketLocation(&s3.GetBucketLocationInput{
+		Bucket: &bucket,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if resp.LocationConstraint == nil {
+		return "us-east-1", nil
+	}
+
+	return *resp.LocationConstraint, nil
 }
