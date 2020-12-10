@@ -10,6 +10,7 @@ type IS3Client interface {
 	SetAPI(s3iface.S3API)
 	ListBuckets() ([]*s3.Bucket, error)
 	GetRegion(bucket string) (string, error)
+	ListObjects(bucket string, tkn *string) ([]*s3.Object, *string, error)
 }
 
 // S3Client .
@@ -50,4 +51,17 @@ func (c *S3Client) GetRegion(bucket string) (string, error) {
 	}
 
 	return *resp.LocationConstraint, nil
+}
+
+// ListObjects .
+func (c *S3Client) ListObjects(bucket string, tkn *string) ([]*s3.Object, *string, error) {
+	resp, err := c.s3API.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket:            &bucket,
+		ContinuationToken: tkn,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return resp.Contents, resp.NextContinuationToken, nil
 }

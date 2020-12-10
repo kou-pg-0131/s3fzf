@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3ls/src/infrastructures"
 )
 
@@ -38,12 +40,45 @@ func main() {
 		panic(err)
 	}
 
-	reg, err := s3c.GetRegion(*bs[i].Name)
+	os := []*s3.Object{}
+
+	go func() {
+		reg, err := s3c.GetRegion(*bs[i].Name)
+		if err != nil {
+			panic(err)
+		}
+
+		s3c.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(reg)))
+
+		tkn := (*string)(nil)
+		for {
+			resp, ntkn, err := s3c.ListObjects(*bs[i].Name, tkn)
+			if err != nil {
+				panic(err)
+			}
+
+			os = append(os, resp...)
+
+			tkn = ntkn
+			if tkn == nil {
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	j, err := fzf.Find(&os, func(j int) string {
+		return *os[j].Key
+	}, func(j, w, h int) string {
+		if j == -1 {
+			return ""
+		}
+
+		return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[j].Key, humanize.Bytes(uint64(*os[j].Size)), *os[j].LastModified)
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	s3c.SetAPI(
-		s3.New(session.New(), aws.NewConfig().WithRegion(reg)),
-	)
+	fmt.Printf("%#v\n", *os[j])
 }
