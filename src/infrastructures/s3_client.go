@@ -1,6 +1,8 @@
 package infrastructures
 
 import (
+	"io"
+
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
@@ -11,6 +13,7 @@ type IS3Client interface {
 	ListBuckets() ([]*s3.Bucket, error)
 	GetRegion(bucket string) (string, error)
 	ListObjects(bucket string, tkn *string) ([]*s3.Object, *string, error)
+	GetObject(bucket, key string) (io.ReadCloser, error)
 }
 
 // S3Client .
@@ -64,4 +67,17 @@ func (c *S3Client) ListObjects(bucket string, tkn *string) ([]*s3.Object, *strin
 	}
 
 	return resp.Contents, resp.NextContinuationToken, nil
+}
+
+// GetObject .
+func (c *S3Client) GetObject(bucket, key string) (io.ReadCloser, error) {
+	resp, err := c.s3API.GetObject(&s3.GetObjectInput{
+		Bucket: &bucket,
+		Key:    &key,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Body, nil
 }

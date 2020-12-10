@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -80,5 +81,14 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("%#v\n", *os[j])
+	f, err := s3c.GetObject(*bs[i].Name, *os[j].Key)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(f)
+
+	fmt.Print(buf.String())
 }
