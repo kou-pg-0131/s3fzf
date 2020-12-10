@@ -7,6 +7,7 @@ import (
 
 // IS3Client .
 type IS3Client interface {
+	SetAPI(s3iface.S3API)
 	ListBuckets() ([]*s3.Bucket, error)
 	GetRegion(bucket string) (string, error)
 }
@@ -19,6 +20,11 @@ type S3Client struct {
 // NewS3Client .
 func NewS3Client(s3API s3iface.S3API) IS3Client {
 	return &S3Client{s3API: s3API}
+}
+
+// SetAPI .
+func (c *S3Client) SetAPI(s3API s3iface.S3API) {
+	c.s3API = s3API
 }
 
 // ListBuckets .

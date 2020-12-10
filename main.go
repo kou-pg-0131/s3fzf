@@ -43,5 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(reg)
+	s3c.SetAPI(
+		s3.New(session.New(), aws.NewConfig().WithRegion(reg)),
+	)
 }
