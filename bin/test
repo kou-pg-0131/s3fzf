@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+go test ./... -coverprofile=cover.out -covermode=atomic
+go tool cover -html cover.out -o cover.html
+echo $(go tool cover -func ./cover.out | grep total)
