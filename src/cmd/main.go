@@ -10,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3fzf/src/infrastructures"
-	"github.com/nsf/termbox-go"
 )
 
 // Command .
@@ -88,7 +87,7 @@ func (c *Command) findBucket() (*s3.Bucket, error) {
 
 	select {
 	case err := <-chlserr:
-		termbox.Close()
+		c.fzf.Close()
 		return nil, err
 	case err := <-chfderr:
 		return nil, err
@@ -150,7 +149,7 @@ func (c *Command) findObject(bucket string) (*s3.Object, error) {
 
 	select {
 	case err := <-chlserr:
-		termbox.Close()
+		c.fzf.Close()
 		return nil, err
 	case err := <-chfderr:
 		return nil, err

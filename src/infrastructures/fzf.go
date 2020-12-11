@@ -2,11 +2,13 @@ package infrastructures
 
 import (
 	fzf "github.com/ktr0731/go-fuzzyfinder"
+	"github.com/nsf/termbox-go"
 )
 
 // IFZF .
 type IFZF interface {
 	Find(list interface{}, itemFunc func(int) string, previewFunc func(int, int, int) string) (int, error)
+	Close()
 }
 
 // FZF .
@@ -24,4 +26,9 @@ func (f *FZF) Find(list interface{}, itemFunc func(int) string, previewFunc func
 		return -1, err
 	}
 	return i, nil
+}
+
+// Close .
+func (f *FZF) Close() {
+	termbox.Close()
 }
