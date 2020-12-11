@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
@@ -33,11 +32,15 @@ func (c *Command) Do() error {
 		return err
 	}
 
-	bs, err := c.s3Controller.GetObject(*b.Name, *o.Key)
+	f, err := c.s3Controller.GetObject(*b.Name, *o.Key)
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
-	fmt.Fprint(c.fileWriter, string(bs))
+	if _, err := io.Copy(c.fileWriter, f); err != nil {
+		return err
+	}
+
 	return nil
 }
