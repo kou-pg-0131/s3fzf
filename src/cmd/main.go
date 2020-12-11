@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3fzf/src/infrastructures"
+	"github.com/nsf/termbox-go"
 )
 
 // Command .
@@ -56,37 +57,57 @@ func (c *Command) Do() error {
 func (c *Command) findBucket() (*s3.Bucket, error) {
 	bs := []*s3.Bucket{}
 
+	chidx := make(chan int, 1)
+	chlserr := make(chan error, 1)
+	chfderr := make(chan error, 1)
+
 	go func() {
 		resp, err := c.s3Client.ListBuckets()
 		if err != nil {
-			panic(err)
+			chlserr <- err
 		}
 
 		bs = resp
 	}()
 
-	i, err := c.fzf.Find(&bs, func(i int) string {
-		return *bs[i].Name
-	}, func(i, w, h int) string {
-		if i == -1 {
-			return ""
+	go func() {
+		i, err := c.fzf.Find(&bs, func(i int) string {
+			return *bs[i].Name
+		}, func(i, w, h int) string {
+			if i == -1 {
+				return ""
+			}
+			return fmt.Sprintf("%s\n\nCreationDate: %s", *bs[i].Name, *bs[i].CreationDate)
+		})
+		if err != nil {
+			chfderr <- err
 		}
-		return fmt.Sprintf("%s\n\nCreationDate: %s", *bs[i].Name, *bs[i].CreationDate)
-	})
-	if err != nil {
-		return nil, err
-	}
 
-	return bs[i], nil
+		chidx <- i
+	}()
+
+	select {
+	case err := <-chlserr:
+		termbox.Close()
+		return nil, err
+	case err := <-chfderr:
+		return nil, err
+	case idx := <-chidx:
+		return bs[idx], nil
+	}
 }
 
 func (c *Command) findObject(bucket string) (*s3.Object, error) {
 	os := []*s3.Object{}
 
+	chlserr := make(chan error, 1)
+	chfderr := make(chan error, 1)
+	chidx := make(chan int, 1)
+
 	go func() {
 		reg, err := c.s3Client.GetRegion(bucket)
 		if err != nil {
-			panic(err)
+			chlserr <- err
 		}
 
 		c.s3Client.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(reg)))
@@ -95,10 +116,13 @@ func (c *Command) findObject(bucket string) (*s3.Object, error) {
 		for {
 			resp, ntkn, err := c.s3Client.ListObjects(bucket, tkn)
 			if err != nil {
-				panic(err)
+				chlserr <- err
 			}
 
 			os = append(os, resp...)
+			if len(os) == 0 {
+				chlserr <- fmt.Errorf("`s3://%s` is empty", bucket)
+			}
 
 			tkn = ntkn
 			if tkn == nil {
@@ -108,18 +132,29 @@ func (c *Command) findObject(bucket string) (*s3.Object, error) {
 		}
 	}()
 
-	i, err := c.fzf.Find(&os, func(i int) string {
-		return *os[i].Key
-	}, func(i, w, h int) string {
-		if i == -1 {
-			return ""
+	go func() {
+		i, err := c.fzf.Find(&os, func(i int) string {
+			return *os[i].Key
+		}, func(i, w, h int) string {
+			if i == -1 {
+				return ""
+			}
+
+			return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
+		})
+		if err != nil {
+			chfderr <- err
 		}
+		chidx <- i
+	}()
 
-		return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
-	})
-	if err != nil {
+	select {
+	case err := <-chlserr:
+		termbox.Close()
 		return nil, err
+	case err := <-chfderr:
+		return nil, err
+	case idx := <-chidx:
+		return os[idx], nil
 	}
-
-	return os[i], nil
 }
