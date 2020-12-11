@@ -16,7 +16,7 @@ func main() {
 	app.HideHelpCommand = true
 
 	app.Action = func(ctx *cli.Context) error {
-		return cmd.New().Do()
+		return cmd.New(os.Stdout).Do()
 	}
 
 	if err := app.Run(os.Args); err != nil {

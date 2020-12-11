@@ -2,18 +2,21 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
 )
 
 // Command .
 type Command struct {
+	fileWriter   io.Writer
 	s3Controller controllers.IS3Controller
 }
 
 // New .
-func New() *Command {
+func New(out io.Writer) *Command {
 	return &Command{
+		fileWriter:   out,
 		s3Controller: controllers.NewS3ControllerFactory().Create(),
 	}
 }
@@ -35,6 +38,6 @@ func (c *Command) Do() error {
 		return err
 	}
 
-	fmt.Print(string(bs))
+	fmt.Fprint(c.fileWriter, string(bs))
 	return nil
 }
