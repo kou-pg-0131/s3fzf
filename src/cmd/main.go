@@ -40,14 +40,14 @@ func (c *Command) Do() error {
 		return err
 	}
 
-	f, err := c.s3Client.GetObject(*b.Name, *o.Key)
+	resp, err := c.s3Client.GetObject(*b.Name, *o.Key)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer resp.Body.Close()
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(f)
+	buf.ReadFrom(resp.Body)
 
 	fmt.Print(buf.String())
 	return nil
@@ -66,7 +66,7 @@ func (c *Command) findBucket() (*s3.Bucket, error) {
 			chlserr <- err
 		}
 
-		bs = resp
+		bs = resp.Buckets
 	}()
 
 	go func() {
@@ -104,26 +104,26 @@ func (c *Command) findObject(bucket string) (*s3.Object, error) {
 	chidx := make(chan int, 1)
 
 	go func() {
-		reg, err := c.s3Client.GetRegion(bucket)
+		resp, err := c.s3Client.GetBucketLocation(bucket)
 		if err != nil {
 			chlserr <- err
 		}
 
-		c.s3Client.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(reg)))
+		c.s3Client.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(*resp.LocationConstraint)))
 
 		tkn := (*string)(nil)
 		for {
-			resp, ntkn, err := c.s3Client.ListObjects(bucket, tkn)
+			resp, err := c.s3Client.ListObjects(bucket, tkn)
 			if err != nil {
 				chlserr <- err
 			}
 
-			os = append(os, resp...)
+			os = append(os, resp.Contents...)
 			if len(os) == 0 {
 				chlserr <- fmt.Errorf("`s3://%s` is empty", bucket)
 			}
 
-			tkn = ntkn
+			tkn = resp.NextContinuationToken
 			if tkn == nil {
 				break
 			}

@@ -1,8 +1,6 @@
 package infrastructures
 
 import (
-	"io"
-
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
@@ -10,10 +8,10 @@ import (
 // IS3Client .
 type IS3Client interface {
 	SetAPI(s3iface.S3API)
-	ListBuckets() ([]*s3.Bucket, error)
-	GetRegion(bucket string) (string, error)
-	ListObjects(bucket string, tkn *string) ([]*s3.Object, *string, error)
-	GetObject(bucket, key string) (io.ReadCloser, error)
+	ListBuckets() (*s3.ListBucketsOutput, error)
+	GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput, error)
+	ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Output, error)
+	GetObject(bucket, key string) (*s3.GetObjectOutput, error)
 }
 
 // S3Client .
@@ -32,45 +30,44 @@ func (c *S3Client) SetAPI(s3API s3iface.S3API) {
 }
 
 // ListBuckets .
-func (c *S3Client) ListBuckets() ([]*s3.Bucket, error) {
+func (c *S3Client) ListBuckets() (*s3.ListBucketsOutput, error) {
 	resp, err := c.s3API.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
 	}
-	return resp.Buckets, nil
+	return resp, nil
 }
 
-// GetRegion .
-func (c *S3Client) GetRegion(bucket string) (string, error) {
+// GetBucketLocation .
+func (c *S3Client) GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput, error) {
 	resp, err := c.s3API.GetBucketLocation(&s3.GetBucketLocationInput{
 		Bucket: &bucket,
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if resp.LocationConstraint == nil {
-		return "us-east-1", nil
+		resp.SetLocationConstraint("us-east-1")
 	}
 
-	return *resp.LocationConstraint, nil
+	return resp, nil
 }
 
 // ListObjects .
-func (c *S3Client) ListObjects(bucket string, tkn *string) ([]*s3.Object, *string, error) {
+func (c *S3Client) ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Output, error) {
 	resp, err := c.s3API.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:            &bucket,
 		ContinuationToken: tkn,
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-
-	return resp.Contents, resp.NextContinuationToken, nil
+	return resp, nil
 }
 
 // GetObject .
-func (c *S3Client) GetObject(bucket, key string) (io.ReadCloser, error) {
+func (c *S3Client) GetObject(bucket, key string) (*s3.GetObjectOutput, error) {
 	resp, err := c.s3API.GetObject(&s3.GetObjectInput{
 		Bucket: &bucket,
 		Key:    &key,
@@ -79,5 +76,5 @@ func (c *S3Client) GetObject(bucket, key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	return resp.Body, nil
+	return resp, nil
 }
