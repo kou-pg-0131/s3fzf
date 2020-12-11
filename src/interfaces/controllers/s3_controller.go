@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -15,6 +16,7 @@ import (
 type IS3Controller interface {
 	FindBucket() (*s3.Bucket, error)
 	FindObject(bucket string) (*s3.Object, error)
+	GetObject(bucket, key string) (io.ReadCloser, error)
 }
 
 // S3Controller .
@@ -143,4 +145,13 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 	case idx := <-chidx:
 		return os[idx], nil
 	}
+}
+
+// GetObject .
+func (c *S3Controller) GetObject(bucket, key string) (io.ReadCloser, error) {
+	resp, err := c.s3Client.GetObject(bucket, key)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, nil
 }

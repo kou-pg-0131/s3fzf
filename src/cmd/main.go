@@ -42,14 +42,14 @@ func (c *Command) Do() error {
 		return err
 	}
 
-	resp, err := c.s3Client.GetObject(*b.Name, *o.Key)
+	f, err := c.s3Controller.GetObject(*b.Name, *o.Key)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer f.Close()
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.Body)
+	buf.ReadFrom(f)
 
 	fmt.Print(buf.String())
 	return nil
