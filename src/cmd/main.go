@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
@@ -31,15 +30,11 @@ func (c *Command) Do() error {
 		return err
 	}
 
-	f, err := c.s3Controller.GetObject(*b.Name, *o.Key)
+	bs, err := c.s3Controller.GetObject(*b.Name, *o.Key)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(f)
-
-	fmt.Print(buf.String())
+	fmt.Print(string(bs))
 	return nil
 }
