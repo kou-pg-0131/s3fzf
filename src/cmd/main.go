@@ -10,13 +10,15 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3fzf/src/infrastructures"
+	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/gateways"
 )
 
 // Command .
 type Command struct {
-	s3Client gateways.IS3Client
-	fzf      gateways.IFZF
+	s3Controller controllers.IS3Controller
+	s3Client     gateways.IS3Client
+	fzf          gateways.IFZF
 }
 
 // New .
@@ -24,14 +26,15 @@ func New() *Command {
 	s3api := s3.New(session.New(), aws.NewConfig().WithRegion("us-east-1"))
 
 	return &Command{
-		s3Client: infrastructures.NewS3Client(s3api),
-		fzf:      infrastructures.NewFZF(),
+		s3Controller: controllers.NewS3ControllerFactory().Create(),
+		s3Client:     infrastructures.NewS3Client(s3api),
+		fzf:          infrastructures.NewFZF(),
 	}
 }
 
 // Do ...
 func (c *Command) Do() error {
-	b, err := c.findBucket()
+	b, err := c.s3Controller.FindBucket()
 	if err != nil {
 		return err
 	}
@@ -52,49 +55,6 @@ func (c *Command) Do() error {
 
 	fmt.Print(buf.String())
 	return nil
-}
-
-func (c *Command) findBucket() (*s3.Bucket, error) {
-	bs := []*s3.Bucket{}
-
-	chidx := make(chan int, 1)
-	chlserr := make(chan error, 1)
-	chfderr := make(chan error, 1)
-
-	go func() {
-		resp, err := c.s3Client.ListBuckets()
-		if err != nil {
-			chlserr <- err
-		}
-
-		bs = resp.Buckets
-	}()
-
-	go func() {
-		i, err := c.fzf.Find(&bs, func(i int) string {
-			return *bs[i].Name
-		}, func(i, w, h int) string {
-			if i == -1 {
-				return ""
-			}
-			return fmt.Sprintf("%s\n\nCreationDate: %s", *bs[i].Name, *bs[i].CreationDate)
-		})
-		if err != nil {
-			chfderr <- err
-		}
-
-		chidx <- i
-	}()
-
-	select {
-	case err := <-chlserr:
-		c.fzf.Close()
-		return nil, err
-	case err := <-chfderr:
-		return nil, err
-	case idx := <-chidx:
-		return bs[idx], nil
-	}
 }
 
 func (c *Command) findObject(bucket string) (*s3.Object, error) {
