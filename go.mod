@@ -7,5 +7,6 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ktr0731/go-fuzzyfinder v0.2.1
 	github.com/nsf/termbox-go v0.0.0-20200418040025-38ba6e5628f1
+	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli/v2 v2.3.0
 )
