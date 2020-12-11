@@ -21,10 +21,10 @@ type Command struct {
 
 // New .
 func New() *Command {
-	s3API := s3.New(session.New(), aws.NewConfig().WithRegion("us-east-1"))
+	s3api := s3.New(session.New(), aws.NewConfig().WithRegion("us-east-1"))
 
 	return &Command{
-		s3Client: infrastructures.NewS3Client(s3API),
+		s3Client: infrastructures.NewS3Client(s3api),
 		fzf:      infrastructures.NewFZF(),
 	}
 }

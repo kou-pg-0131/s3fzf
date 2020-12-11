@@ -7,22 +7,22 @@ import (
 
 // S3Client .
 type S3Client struct {
-	s3API s3iface.S3API
+	s3api s3iface.S3API
 }
 
 // NewS3Client .
-func NewS3Client(s3API s3iface.S3API) *S3Client {
-	return &S3Client{s3API: s3API}
+func NewS3Client(s3api s3iface.S3API) *S3Client {
+	return &S3Client{s3api: s3api}
 }
 
 // SetAPI .
-func (c *S3Client) SetAPI(s3API s3iface.S3API) {
-	c.s3API = s3API
+func (c *S3Client) SetAPI(s3api s3iface.S3API) {
+	c.s3api = s3api
 }
 
 // ListBuckets .
 func (c *S3Client) ListBuckets() (*s3.ListBucketsOutput, error) {
-	resp, err := c.s3API.ListBuckets(&s3.ListBucketsInput{})
+	resp, err := c.s3api.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (c *S3Client) ListBuckets() (*s3.ListBucketsOutput, error) {
 
 // GetBucketLocation .
 func (c *S3Client) GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput, error) {
-	resp, err := c.s3API.GetBucketLocation(&s3.GetBucketLocationInput{
+	resp, err := c.s3api.GetBucketLocation(&s3.GetBucketLocationInput{
 		Bucket: &bucket,
 	})
 	if err != nil {
@@ -47,7 +47,7 @@ func (c *S3Client) GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput
 
 // ListObjects .
 func (c *S3Client) ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Output, error) {
-	resp, err := c.s3API.ListObjectsV2(&s3.ListObjectsV2Input{
+	resp, err := c.s3api.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:            &bucket,
 		ContinuationToken: tkn,
 	})
@@ -59,7 +59,7 @@ func (c *S3Client) ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Out
 
 // GetObject .
 func (c *S3Client) GetObject(bucket, key string) (*s3.GetObjectOutput, error) {
-	resp, err := c.s3API.GetObject(&s3.GetObjectInput{
+	resp, err := c.s3api.GetObject(&s3.GetObjectInput{
 		Bucket: &bucket,
 		Key:    &key,
 	})
