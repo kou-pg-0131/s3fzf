@@ -10,12 +10,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3fzf/src/infrastructures"
+	"github.com/kou-pg-0131/s3fzf/src/interfaces/gateways"
 )
 
 // Command .
 type Command struct {
-	s3Client infrastructures.IS3Client
-	fzf      infrastructures.IFZF
+	s3Client gateways.IS3Client
+	fzf      gateways.IFZF
 }
 
 // New .

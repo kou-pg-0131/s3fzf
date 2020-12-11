@@ -5,17 +5,11 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// IFZF .
-type IFZF interface {
-	Find(list interface{}, itemFunc func(int) string, previewFunc func(int, int, int) string) (int, error)
-	Close()
-}
-
 // FZF .
 type FZF struct{}
 
 // NewFZF .
-func NewFZF() IFZF {
+func NewFZF() *FZF {
 	return new(FZF)
 }
 

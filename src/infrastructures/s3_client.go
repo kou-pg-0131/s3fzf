@@ -5,22 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
-// IS3Client .
-type IS3Client interface {
-	SetAPI(s3iface.S3API)
-	ListBuckets() (*s3.ListBucketsOutput, error)
-	GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput, error)
-	ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Output, error)
-	GetObject(bucket, key string) (*s3.GetObjectOutput, error)
-}
-
 // S3Client .
 type S3Client struct {
 	s3API s3iface.S3API
 }
 
 // NewS3Client .
-func NewS3Client(s3API s3iface.S3API) IS3Client {
+func NewS3Client(s3API s3iface.S3API) *S3Client {
 	return &S3Client{s3API: s3API}
 }
 
