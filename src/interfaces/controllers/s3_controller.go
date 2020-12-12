@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"io"
+	"path/filepath"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -134,7 +135,7 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 				return ""
 			}
 
-			return fmt.Sprintf("%s\n\nSize: %s\nLastModified: %s", *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
+			return fmt.Sprintf("%s\n\nBucket: %s\nKey: %s\nSize: %s\nLastModified: %s", filepath.Base(*os[i].Key), bucket, *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
 		})
 		if err != nil {
 			chfderr <- err
