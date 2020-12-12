@@ -17,27 +17,27 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "s3fzf"
-	app.Usage = "usage"          // TODO
-	app.UsageText = "usage text" // TODO
+	app.Usage = "Fuzzy Finder for AWS S3."
+	app.UsageText = "s3fzf [global options]"
 	app.HideHelpCommand = true
 
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:        "b",
-			Usage:       "bucket usage", // TODO
-			Aliases:     []string{"bucket"},
+			Name:        "bucket",
+			Usage:       "The name of the bucket containing the objects",
+			Aliases:     []string{"b"},
 			Destination: &bucket,
 		},
 		&cli.StringFlag{
-			Name:        "p",
-			Usage:       "profile usage", // TODO
-			Aliases:     []string{"profile"},
+			Name:        "profile",
+			Usage:       "Use a specific profile from your credential file",
+			Aliases:     []string{"p"},
 			Destination: &profile,
 		},
 		&cli.StringFlag{
-			Name:        "o",
-			Usage:       "output usage", // TODO
-			Aliases:     []string{"output"},
+			Name:        "output",
+			Usage:       "File path of the output destination",
+			Aliases:     []string{"o"},
 			Destination: &output,
 		},
 	}
