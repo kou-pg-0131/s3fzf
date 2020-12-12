@@ -9,14 +9,26 @@ import (
 )
 
 func main() {
+	var (
+		bucket string
+	)
+
 	app := cli.NewApp()
 	app.Name = "s3fzf"
 	app.Usage = "usage"          // TODO
 	app.UsageText = "usage text" // TODO
 	app.HideHelpCommand = true
 
+	app.Flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:        "bucket",
+			Usage:       "bucket usage", // TODO
+			Destination: &bucket,
+		},
+	}
+
 	app.Action = func(ctx *cli.Context) error {
-		return cmd.New(os.Stdout).Do()
+		return cmd.New(os.Stdout).Do(bucket)
 	}
 
 	if err := app.Run(os.Args); err != nil {
