@@ -14,13 +14,13 @@ Fuzzy Finder for AWS S3.
 
 ## Installation
 
-```sh
+```
 $ go get -u github.com/kou-pg-0131/s3fzf
 ```
 
 ## Usage
 
-```sh
+```
 $ s3fzf --help
 NAME:
    s3fzf - Fuzzy Finder for AWS S3.
