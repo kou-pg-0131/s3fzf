@@ -45,6 +45,26 @@ func TestCommand_Do_ReturnNilWhenSucceeded(t *testing.T) {
 	ms3c.AssertNumberOfCalls(t, "GetObject", 1)
 }
 
+func TestCommand_Do_ReturnNilWhenPassedBucket(t *testing.T) {
+	w := new(bytes.Buffer)
+	f := ioutil.NopCloser(strings.NewReader("FILE"))
+
+	ms3c := new(mockS3Controller)
+	ms3c.On("FindBucket").Return(&s3.Bucket{Name: aws.String("BUCKET")}, nil)
+	ms3c.On("FindObject", "BUCKET").Return(&s3.Object{Key: aws.String("KEY")}, nil)
+	ms3c.On("GetObject", "BUCKET", "KEY").Return(f, nil)
+
+	cmd := &Command{fileWriter: w, s3Controller: ms3c}
+
+	err := cmd.Do("BUCKET")
+
+	assert.Nil(t, err)
+	assert.Equal(t, "FILE", w.String())
+	ms3c.AssertNumberOfCalls(t, "FindBucket", 0)
+	ms3c.AssertNumberOfCalls(t, "FindObject", 1)
+	ms3c.AssertNumberOfCalls(t, "GetObject", 1)
+}
+
 func TestCommand_Do_ReturnErrorWhenFindBucketFailed(t *testing.T) {
 	ms3c := new(mockS3Controller)
 	ms3c.On("FindBucket").Return((*s3.Bucket)(nil), errors.New("SOMETHING_WRONG"))
