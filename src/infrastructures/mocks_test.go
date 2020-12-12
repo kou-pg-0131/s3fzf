@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	fzf "github.com/ktr0731/go-fuzzyfinder"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -36,6 +37,31 @@ func (m *mockS3API) ListObjectsV2(i *s3.ListObjectsV2Input) (*s3.ListObjectsV2Ou
 func (m *mockS3API) GetObject(i *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
 	args := m.Called(i)
 	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
+}
+
+/*
+ * fzf
+ */
+
+type mockFZF struct {
+	mock.Mock
+}
+
+func (m *mockFZF) Find(list interface{}, itemFunc func(int) string, opts ...fzf.Option) (int, error) {
+	args := m.Called(list, itemFunc, opts)
+	return args.Int(0), args.Error(1)
+}
+
+/*
+ * termbox
+ */
+
+type mockTermbox struct {
+	mock.Mock
+}
+
+func (m *mockTermbox) Close() {
+	m.Called()
 }
 
 /*

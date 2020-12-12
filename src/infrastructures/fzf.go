@@ -6,16 +6,22 @@ import (
 )
 
 // FZF .
-type FZF struct{}
+type FZF struct {
+	fzfFind      func(list interface{}, itemFunc func(int) string, opts ...fzf.Option) (int, error)
+	termboxClose func()
+}
 
 // NewFZF .
 func NewFZF() *FZF {
-	return new(FZF)
+	return &FZF{
+		fzfFind:      fzf.Find,
+		termboxClose: termbox.Close,
+	}
 }
 
 // Find .
 func (f *FZF) Find(list interface{}, itemFunc func(int) string, previewFunc func(int, int, int) string) (int, error) {
-	i, err := fzf.Find(list, itemFunc, fzf.WithHotReload(), fzf.WithPreviewWindow(previewFunc))
+	i, err := f.fzfFind(list, itemFunc, fzf.WithHotReload(), fzf.WithPreviewWindow(previewFunc))
 	if err != nil {
 		return -1, err
 	}
@@ -24,5 +30,5 @@ func (f *FZF) Find(list interface{}, itemFunc func(int) string, previewFunc func
 
 // Close .
 func (f *FZF) Close() {
-	termbox.Close()
+	f.termboxClose()
 }
