@@ -4,17 +4,28 @@ import (
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
 )
 
+// ICommand .
+type ICommand interface {
+	Do(bucket, output string) error
+}
+
 // Command .
 type Command struct {
 	fileWriter   IFileWriter
 	s3Controller controllers.IS3Controller
 }
 
+// CommandConfig .
+type CommandConfig struct {
+	FileWriter   IFileWriter
+	S3Controller controllers.IS3Controller
+}
+
 // New .
-func New(profile string) *Command {
+func New(cnf *CommandConfig) ICommand {
 	return &Command{
-		fileWriter:   NewFileWriter(),
-		s3Controller: controllers.NewS3ControllerFactory().Create(profile),
+		fileWriter:   cnf.FileWriter,
+		s3Controller: cnf.S3Controller,
 	}
 }
 
