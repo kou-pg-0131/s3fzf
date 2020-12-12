@@ -36,7 +36,7 @@ func TestCommand_Do_ReturnNilWhenSucceeded(t *testing.T) {
 
 	cmd := &Command{fileWriter: w, s3Controller: ms3c}
 
-	err := cmd.Do()
+	err := cmd.Do("")
 
 	assert.Nil(t, err)
 	assert.Equal(t, "FILE", w.String())
@@ -51,7 +51,7 @@ func TestCommand_Do_ReturnErrorWhenFindBucketFailed(t *testing.T) {
 
 	cmd := &Command{s3Controller: ms3c}
 
-	err := cmd.Do()
+	err := cmd.Do("")
 
 	assert.EqualError(t, err, "SOMETHING_WRONG")
 	ms3c.AssertNumberOfCalls(t, "FindBucket", 1)
@@ -64,7 +64,7 @@ func TestCommand_Do_ReturnErrorWhenFindObjectFailed(t *testing.T) {
 
 	cmd := &Command{s3Controller: ms3c}
 
-	err := cmd.Do()
+	err := cmd.Do("")
 
 	assert.EqualError(t, err, "SOMETHING_WRONG")
 	ms3c.AssertNumberOfCalls(t, "FindBucket", 1)
@@ -79,7 +79,7 @@ func TestCommand_Do_ReturnErrorWhenGetObjectFailed(t *testing.T) {
 
 	cmd := &Command{s3Controller: ms3c}
 
-	err := cmd.Do()
+	err := cmd.Do("")
 
 	assert.EqualError(t, err, "SOMETHING_WRONG")
 	ms3c.AssertNumberOfCalls(t, "FindBucket", 1)
@@ -100,7 +100,7 @@ func TestCommand_Do_ReturnErrorWhenCopyFailed(t *testing.T) {
 
 	cmd := &Command{fileWriter: w, s3Controller: ms3c}
 
-	err := cmd.Do()
+	err := cmd.Do("")
 
 	assert.EqualError(t, err, "SOMETHING_WRONG")
 	ms3c.AssertNumberOfCalls(t, "FindBucket", 1)

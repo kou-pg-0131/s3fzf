@@ -21,18 +21,21 @@ func New(out io.Writer) *Command {
 }
 
 // Do ...
-func (c *Command) Do() error {
-	b, err := c.s3Controller.FindBucket()
+func (c *Command) Do(bucket string) error {
+	if bucket == "" {
+		b, err := c.s3Controller.FindBucket()
+		if err != nil {
+			return err
+		}
+		bucket = *b.Name
+	}
+
+	o, err := c.s3Controller.FindObject(bucket)
 	if err != nil {
 		return err
 	}
 
-	o, err := c.s3Controller.FindObject(*b.Name)
-	if err != nil {
-		return err
-	}
-
-	f, err := c.s3Controller.GetObject(*b.Name, *o.Key)
+	f, err := c.s3Controller.GetObject(bucket, *o.Key)
 	if err != nil {
 		return err
 	}
