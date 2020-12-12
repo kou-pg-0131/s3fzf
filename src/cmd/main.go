@@ -1,27 +1,25 @@
 package cmd
 
 import (
-	"io"
-
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/controllers"
 )
 
 // Command .
 type Command struct {
-	fileWriter   io.Writer
+	fileWriter   IFileWriter
 	s3Controller controllers.IS3Controller
 }
 
 // New .
-func New(profile string, out io.Writer) *Command {
+func New(profile string) *Command {
 	return &Command{
-		fileWriter:   out,
+		fileWriter:   NewFileWriter(),
 		s3Controller: controllers.NewS3ControllerFactory().Create(profile),
 	}
 }
 
 // Do ...
-func (c *Command) Do(bucket string) error {
+func (c *Command) Do(bucket, output string) error {
 	if bucket == "" {
 		b, err := c.s3Controller.FindBucket()
 		if err != nil {
@@ -41,7 +39,7 @@ func (c *Command) Do(bucket string) error {
 	}
 	defer f.Close()
 
-	if _, err := io.Copy(c.fileWriter, f); err != nil {
+	if err := c.fileWriter.Write(output, f); err != nil {
 		return err
 	}
 
