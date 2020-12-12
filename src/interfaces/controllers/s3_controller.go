@@ -51,6 +51,7 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 		resp, err := c.s3Client.ListBuckets()
 		if err != nil {
 			chlserr <- err
+			return
 		}
 
 		bs = resp.Buckets
@@ -67,6 +68,7 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 		})
 		if err != nil {
 			chfderr <- err
+			return
 		}
 
 		chidx <- i
@@ -93,6 +95,7 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 		resp, err := c.s3Client.GetBucketLocation(bucket)
 		if err != nil {
 			chlserr <- err
+			return
 		}
 
 		c.s3Client.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(*resp.LocationConstraint)))
@@ -102,11 +105,13 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 			resp, err := c.s3Client.ListObjects(bucket, tkn)
 			if err != nil {
 				chlserr <- err
+				return
 			}
 
 			os = append(os, resp.Contents...)
 			if len(os) == 0 {
 				chlserr <- fmt.Errorf("`s3://%s` is empty", bucket)
+				return
 			}
 
 			tkn = resp.NextContinuationToken
@@ -132,6 +137,7 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 		})
 		if err != nil {
 			chfderr <- err
+			return
 		}
 		chidx <- i
 	}()
