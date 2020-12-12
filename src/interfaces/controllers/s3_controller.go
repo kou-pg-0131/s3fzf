@@ -5,8 +5,6 @@ import (
 	"io"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/kou-pg-0131/s3fzf/src/interfaces/gateways"
@@ -21,21 +19,24 @@ type IS3Controller interface {
 
 // S3Controller .
 type S3Controller struct {
-	s3Client gateways.IS3Client
-	fzf      gateways.IFZF
+	s3apiFactory gateways.IS3APIFactory
+	s3Client     gateways.IS3Client
+	fzf          gateways.IFZF
 }
 
 // S3ControllerConfig .
 type S3ControllerConfig struct {
-	S3Client gateways.IS3Client
-	FZF      gateways.IFZF
+	S3APIFactory gateways.IS3APIFactory
+	S3Client     gateways.IS3Client
+	FZF          gateways.IFZF
 }
 
 // NewS3Controller .
 func NewS3Controller(cnf *S3ControllerConfig) *S3Controller {
 	return &S3Controller{
-		s3Client: cnf.S3Client,
-		fzf:      cnf.FZF,
+		s3apiFactory: cnf.S3APIFactory,
+		s3Client:     cnf.S3Client,
+		fzf:          cnf.FZF,
 	}
 }
 
@@ -98,7 +99,7 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 			return
 		}
 
-		c.s3Client.SetAPI(s3.New(session.New(), aws.NewConfig().WithRegion(*resp.LocationConstraint)))
+		c.s3Client.SetAPI(c.s3apiFactory.Create(*resp.LocationConstraint))
 
 		tkn := (*string)(nil)
 		for {

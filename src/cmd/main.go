@@ -13,10 +13,10 @@ type Command struct {
 }
 
 // New .
-func New(out io.Writer) *Command {
+func New(profile string, out io.Writer) *Command {
 	return &Command{
 		fileWriter:   out,
-		s3Controller: controllers.NewS3ControllerFactory().Create(),
+		s3Controller: controllers.NewS3ControllerFactory().Create(profile),
 	}
 }
 

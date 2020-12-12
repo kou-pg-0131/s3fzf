@@ -43,7 +43,7 @@ func main() {
 	}
 
 	app.Action = func(ctx *cli.Context) error {
-		return cmd.New(os.Stdout).Do(bucket)
+		return cmd.New(profile, os.Stdout).Do(bucket)
 	}
 
 	if err := app.Run(os.Args); err != nil {
