@@ -9,6 +9,7 @@ import (
 type FZF struct {
 	fzfFind      func(list interface{}, itemFunc func(int) string, opts ...fzf.Option) (int, error)
 	termboxClose func()
+	termboxSync  func() error
 }
 
 // NewFZF .
@@ -16,6 +17,7 @@ func NewFZF() *FZF {
 	return &FZF{
 		fzfFind:      fzf.Find,
 		termboxClose: termbox.Close,
+		termboxSync:  termbox.Sync,
 	}
 }
 
@@ -31,4 +33,9 @@ func (f *FZF) Find(list interface{}, itemFunc func(int) string, previewFunc func
 // Close .
 func (f *FZF) Close() {
 	f.termboxClose()
+}
+
+// Sync .
+func (f *FZF) Sync() error {
+	return f.termboxSync()
 }
