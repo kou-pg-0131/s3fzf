@@ -12,6 +12,7 @@ func main() {
 	var (
 		profile string
 		bucket  string
+		output  string
 	)
 
 	app := cli.NewApp()
@@ -22,14 +23,22 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:        "bucket",
+			Name:        "b",
 			Usage:       "bucket usage", // TODO
+			Aliases:     []string{"bucket"},
 			Destination: &bucket,
 		},
 		&cli.StringFlag{
-			Name:        "profile",
+			Name:        "p",
 			Usage:       "profile usage", // TODO
+			Aliases:     []string{"profile"},
 			Destination: &profile,
+		},
+		&cli.StringFlag{
+			Name:        "o",
+			Usage:       "output usage", // TODO
+			Aliases:     []string{"output"},
+			Destination: &output,
 		},
 	}
 
