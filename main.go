@@ -10,7 +10,8 @@ import (
 
 func main() {
 	var (
-		bucket string
+		profile string
+		bucket  string
 	)
 
 	app := cli.NewApp()
@@ -24,6 +25,11 @@ func main() {
 			Name:        "bucket",
 			Usage:       "bucket usage", // TODO
 			Destination: &bucket,
+		},
+		&cli.StringFlag{
+			Name:        "profile",
+			Usage:       "profile usage", // TODO
+			Destination: &profile,
 		},
 	}
 
