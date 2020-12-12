@@ -1,10 +1,17 @@
 package infrastructures
 
 import (
+	"io"
+	"os"
+
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/stretchr/testify/mock"
 )
+
+/*
+ * S3API
+ */
 
 type mockS3API struct {
 	mock.Mock
@@ -29,4 +36,30 @@ func (m *mockS3API) ListObjectsV2(i *s3.ListObjectsV2Input) (*s3.ListObjectsV2Ou
 func (m *mockS3API) GetObject(i *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
 	args := m.Called(i)
 	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
+}
+
+/*
+ * os
+ */
+
+type mockOS struct {
+	mock.Mock
+}
+
+func (m *mockOS) Create(path string) (*os.File, error) {
+	args := m.Called(path)
+	return args.Get(0).(*os.File), args.Error(1)
+}
+
+/*
+ * io
+ */
+
+type mockIO struct {
+	mock.Mock
+}
+
+func (m *mockIO) Copy(dist io.Writer, src io.Reader) (int64, error) {
+	args := m.Called(dist, src)
+	return args.Get(0).(int64), args.Error(1)
 }
