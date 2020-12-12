@@ -1,2 +1,6 @@
 /s3fzf
 /cover.*
+
+# circleci-env
+/.circleci-env/.env
+/.circleci-env/circle-token
