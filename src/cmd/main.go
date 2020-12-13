@@ -6,7 +6,7 @@ import (
 
 // ICommand .
 type ICommand interface {
-	Do(bucket, output string) error
+	Copy(bucket, output string) error
 }
 
 // Command .
@@ -29,8 +29,8 @@ func New(cnf *CommandConfig) ICommand {
 	}
 }
 
-// Do ...
-func (c *Command) Do(bucket, output string) error {
+// Copy ...
+func (c *Command) Copy(bucket, output string) error {
 	if bucket == "" {
 		b, err := c.s3Controller.FindBucket()
 		if err != nil {

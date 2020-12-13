@@ -43,7 +43,7 @@ func main() {
 	}
 
 	app.Action = func(ctx *cli.Context) error {
-		return cmd.NewFactory().Create(profile).Do(bucket, output)
+		return cmd.NewFactory().Create(profile).Copy(bucket, output)
 	}
 
 	if err := app.Run(os.Args); err != nil {
