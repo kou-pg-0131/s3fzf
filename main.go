@@ -25,13 +25,13 @@ func main() {
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:        "bucket",
-			Usage:       "The name of the bucket containing the objects",
+			Usage:       "name of the bucket containing the objects",
 			Aliases:     []string{"b"},
 			Destination: &bucket,
 		},
 		&cli.StringFlag{
 			Name:        "profile",
-			Usage:       "Use a specific profile from your credential file",
+			Usage:       "use a specific profile from your credential file",
 			Aliases:     []string{"p"},
 			Destination: &profile,
 		},
@@ -40,12 +40,12 @@ func main() {
 	app.Commands = []*cli.Command{
 		{
 			Name:      "cp",
-			Usage:     "cp usage",      // TODO
-			UsageText: "cp usage text", // TODO
+			Usage:     "Copy S3 object to local.",
+			UsageText: "s3fzf cp [options]",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:        "output",
-					Usage:       "File path of the output destination",
+					Usage:       "file path of the output destination",
 					Aliases:     []string{"o"},
 					Destination: &output,
 					Required:    true,
@@ -57,12 +57,12 @@ func main() {
 		},
 		{
 			Name:      "rm",
-			Usage:     "rm usage",      // TODO
-			UsageText: "rm usage text", // TODO
+			Usage:     "Delete an S3 object.",
+			UsageText: "s3fzf rm [options]",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "no-confirm",
-					Usage:       "no-confirm usage",
+					Usage:       "skip the confirmation before deleting",
 					Destination: &noconf,
 				},
 			},
