@@ -6,7 +6,7 @@ import (
 )
 
 // Remove .
-func (c *Command) Remove(bucket string) error {
+func (c *Command) Remove(bucket string, noconf bool) error {
 	if bucket == "" {
 		b, err := c.s3Controller.FindBucket()
 		if err != nil {
@@ -20,12 +20,14 @@ func (c *Command) Remove(bucket string) error {
 		return err
 	}
 
-	yes, err := c.confirmer.Confirm(fmt.Sprintf("remove `s3://%s/%s`?(y/N): ", bucket, *o.Key))
-	if err != nil {
-		return err
-	}
-	if !yes {
-		return errors.New("cancelled")
+	if !noconf {
+		yes, err := c.confirmer.Confirm(fmt.Sprintf("remove `s3://%s/%s`?(y/N): ", bucket, *o.Key))
+		if err != nil {
+			return err
+		}
+		if !yes {
+			return errors.New("cancelled")
+		}
 	}
 
 	if err := c.s3Controller.DeleteObject(bucket, *o.Key); err != nil {

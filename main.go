@@ -13,6 +13,7 @@ func main() {
 		profile string
 		bucket  string
 		output  string
+		noconf  bool
 	)
 
 	app := cli.NewApp()
@@ -57,8 +58,15 @@ func main() {
 			Name:      "rm",
 			Usage:     "rm usage",      // TODO
 			UsageText: "rm usage text", // TODO
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:        "no-confirm",
+					Usage:       "no-confirm usage",
+					Destination: &noconf,
+				},
+			},
 			Action: func(ctx *cli.Context) error {
-				return cmd.NewFactory().Create(profile).Remove(bucket)
+				return cmd.NewFactory().Create(profile).Remove(bucket, noconf)
 			},
 		},
 	}

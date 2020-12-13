@@ -7,7 +7,7 @@ import (
 // ICommand .
 type ICommand interface {
 	Copy(bucket, output string) error
-	Remove(bucket string) error
+	Remove(bucket string, noconf bool) error
 }
 
 // Command .
