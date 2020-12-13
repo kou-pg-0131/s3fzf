@@ -58,7 +58,7 @@ func main() {
 			Usage:     "rm usage",      // TODO
 			UsageText: "rm usage text", // TODO
 			Action: func(ctx *cli.Context) error {
-				return nil
+				return cmd.NewFactory().Create(profile).Remove(bucket)
 			},
 		},
 	}
