@@ -46,18 +46,7 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 	bs := []*s3.Bucket{}
 
 	chidx := make(chan int, 1)
-	chlserr := make(chan error, 1)
 	chfderr := make(chan error, 1)
-
-	go func() {
-		resp, err := c.s3Client.ListBuckets()
-		if err != nil {
-			chlserr <- err
-			return
-		}
-
-		bs = resp.Buckets
-	}()
 
 	go func() {
 		i, err := c.fzf.Find(&bs, func(i int) string {
@@ -76,6 +65,18 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 		chidx <- i
 	}()
 
+	chlserr := make(chan error, 1)
+
+	go func() {
+		resp, err := c.s3Client.ListBuckets()
+		if err != nil {
+			chlserr <- err
+			return
+		}
+
+		bs = resp.Buckets
+	}()
+
 	select {
 	case err := <-chlserr:
 		c.fzf.Sync()
@@ -91,6 +92,26 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 // FindObject .
 func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 	os := []*s3.Object{}
+
+	chfderr := make(chan error, 1)
+	chidx := make(chan int, 1)
+
+	go func() {
+		i, err := c.fzf.Find(&os, func(i int) string {
+			return *os[i].Key
+		}, func(i, w, h int) string {
+			if i == -1 {
+				return ""
+			}
+
+			return fmt.Sprintf("%s\n\nBucket: %s\nKey: %s\nSize: %s\nLastModified: %s", filepath.Base(*os[i].Key), bucket, *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
+		})
+		if err != nil {
+			chfderr <- err
+			return
+		}
+		chidx <- i
+	}()
 
 	chlserr := make(chan error, 1)
 
@@ -123,26 +144,6 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 			}
 			time.Sleep(1 * time.Second)
 		}
-	}()
-
-	chfderr := make(chan error, 1)
-	chidx := make(chan int, 1)
-
-	go func() {
-		i, err := c.fzf.Find(&os, func(i int) string {
-			return *os[i].Key
-		}, func(i, w, h int) string {
-			if i == -1 {
-				return ""
-			}
-
-			return fmt.Sprintf("%s\n\nBucket: %s\nKey: %s\nSize: %s\nLastModified: %s", filepath.Base(*os[i].Key), bucket, *os[i].Key, humanize.Bytes(uint64(*os[i].Size)), *os[i].LastModified)
-		})
-		if err != nil {
-			chfderr <- err
-			return
-		}
-		chidx <- i
 	}()
 
 	select {
