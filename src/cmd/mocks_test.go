@@ -31,6 +31,19 @@ func (m *mockScannerAPI) Err() error {
 }
 
 /*
+ * Scanner
+ */
+
+type mockScanner struct {
+	mock.Mock
+}
+
+func (m *mockScanner) Scan() (string, error) {
+	args := m.Called()
+	return args.String(0), args.Error(1)
+}
+
+/*
  * mockIOReadCloser
  */
 
