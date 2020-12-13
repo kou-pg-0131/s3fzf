@@ -10,8 +10,6 @@
 
 Fuzzy Finder for AWS S3.
 
-![preview](./demo/preview.gif)
-
 ## Installation
 
 ```
@@ -28,11 +26,44 @@ NAME:
 USAGE:
    s3fzf [global options]
 
+COMMANDS:
+   cp  Copy S3 object to local.
+   rm  Delete an S3 object.
+
 GLOBAL OPTIONS:
-   --bucket value, -b value   The name of the bucket containing the objects
-   --profile value, -p value  Use a specific profile from your credential file
-   --output value, -o value   File path of the output destination
-   --help, -h                 show help (default: false)
+   --bucket value, -b value   name of the bucket containing the objects.
+   --profile value, -p value  use a specific profile from your credential file.
+   --help, -h                 show help. (default: false)
+```
+
+### cp
+
+```
+$ s3fzf cp --help
+NAME:
+   s3fzf cp - Copy S3 object to local.
+
+USAGE:
+   s3fzf cp [options]
+
+OPTIONS:
+   --output value, -o value  file path of the output destination. if '-' is specified, output to stdout.
+   --help, -h                show help. (default: false)
+```
+
+### rm
+
+```
+$ s3fzf rm --help
+NAME:
+   s3fzf rm - Delete an S3 object.
+
+USAGE:
+   s3fzf rm [options]
+
+OPTIONS:
+   --no-confirm  skip the confirmation before deleting. (default: false)
+   --help, -h    show help. (default: false)
 ```
 
 ## LICENSE
