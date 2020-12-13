@@ -15,6 +15,7 @@ func NewFactory() *Factory {
 // Create .
 func (f *Factory) Create(profile string) ICommand {
 	return New(&CommandConfig{
+		Confirmer:    NewConfirmer(),
 		FileWriter:   NewFileWriter(),
 		S3Controller: controllers.NewS3ControllerFactory().Create(profile),
 	})
