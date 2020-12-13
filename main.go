@@ -22,16 +22,22 @@ func main() {
 	app.UsageText = "s3fzf [global options]"
 	app.HideHelpCommand = true
 
+	cli.HelpFlag = &cli.BoolFlag{
+		Name:    "help",
+		Aliases: []string{"h"},
+		Usage:   "show help.",
+	}
+
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:        "bucket",
-			Usage:       "name of the bucket containing the objects",
+			Usage:       "name of the bucket containing the objects.",
 			Aliases:     []string{"b"},
 			Destination: &bucket,
 		},
 		&cli.StringFlag{
 			Name:        "profile",
-			Usage:       "use a specific profile from your credential file",
+			Usage:       "use a specific profile from your credential file.",
 			Aliases:     []string{"p"},
 			Destination: &profile,
 		},
@@ -45,7 +51,7 @@ func main() {
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:        "output",
-					Usage:       "file path of the output destination",
+					Usage:       "file path of the output destination. if '-' is specified, output to stdout.",
 					Aliases:     []string{"o"},
 					Destination: &output,
 					Required:    true,
@@ -62,7 +68,7 @@ func main() {
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "no-confirm",
-					Usage:       "skip the confirmation before deleting",
+					Usage:       "skip the confirmation before deleting.",
 					Destination: &noconf,
 				},
 			},
