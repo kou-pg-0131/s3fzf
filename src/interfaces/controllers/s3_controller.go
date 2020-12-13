@@ -16,6 +16,7 @@ type IS3Controller interface {
 	FindBucket() (*s3.Bucket, error)
 	FindObject(bucket string) (*s3.Object, error)
 	GetObject(bucket, key string) (io.ReadCloser, error)
+	DeleteObject(bucket, key string) error
 }
 
 // S3Controller .
@@ -165,4 +166,10 @@ func (c *S3Controller) GetObject(bucket, key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 	return resp.Body, nil
+}
+
+// DeleteObject .
+func (c *S3Controller) DeleteObject(bucket, key string) error {
+	_, err := c.s3Client.DeleteObject(bucket, key)
+	return err
 }
