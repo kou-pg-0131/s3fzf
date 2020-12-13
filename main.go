@@ -34,16 +34,25 @@ func main() {
 			Aliases:     []string{"p"},
 			Destination: &profile,
 		},
-		&cli.StringFlag{
-			Name:        "output",
-			Usage:       "File path of the output destination",
-			Aliases:     []string{"o"},
-			Destination: &output,
-		},
 	}
 
-	app.Action = func(ctx *cli.Context) error {
-		return cmd.NewFactory().Create(profile).Copy(bucket, output)
+	app.Commands = []*cli.Command{
+		{
+			Name:      "cp",
+			Usage:     "cp usage",      // TODO
+			UsageText: "cp usage text", // TODO
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:        "output",
+					Usage:       "File path of the output destination",
+					Aliases:     []string{"o"},
+					Destination: &output,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				return cmd.NewFactory().Create(profile).Copy(bucket, output)
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
