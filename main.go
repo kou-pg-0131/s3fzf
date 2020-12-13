@@ -19,7 +19,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "s3fzf"
 	app.Usage = "Fuzzy Finder for AWS S3."
-	app.UsageText = "s3fzf [global options]"
+	app.UsageText = "s3fzf <command> [options]"
 	app.HideHelpCommand = true
 
 	cli.HelpFlag = &cli.BoolFlag{
@@ -28,7 +28,7 @@ func main() {
 		Usage:   "show help.",
 	}
 
-	app.Flags = []cli.Flag{
+	defaultFlags := []cli.Flag{
 		&cli.StringFlag{
 			Name:        "bucket",
 			Usage:       "name of the bucket containing the objects.",
@@ -48,7 +48,7 @@ func main() {
 			Name:      "cp",
 			Usage:     "Copy S3 object to local.",
 			UsageText: "s3fzf cp [options]",
-			Flags: []cli.Flag{
+			Flags: append(defaultFlags, []cli.Flag{
 				&cli.StringFlag{
 					Name:        "output",
 					Usage:       "file path of the output destination. if '-' is specified, output to stdout.",
@@ -56,7 +56,7 @@ func main() {
 					Destination: &output,
 					Required:    true,
 				},
-			},
+			}...),
 			Action: func(ctx *cli.Context) error {
 				return cmd.NewFactory().Create(profile).Copy(bucket, output)
 			},
@@ -65,13 +65,13 @@ func main() {
 			Name:      "rm",
 			Usage:     "Delete an S3 object.",
 			UsageText: "s3fzf rm [options]",
-			Flags: []cli.Flag{
+			Flags: append(defaultFlags, []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "no-confirm",
 					Usage:       "skip the confirmation before deleting.",
 					Destination: &noconf,
 				},
-			},
+			}...),
 			Action: func(ctx *cli.Context) error {
 				return cmd.NewFactory().Create(profile).Remove(bucket, noconf)
 			},
