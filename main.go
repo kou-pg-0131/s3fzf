@@ -53,6 +53,14 @@ func main() {
 				return cmd.NewFactory().Create(profile).Copy(bucket, output)
 			},
 		},
+		{
+			Name:      "rm",
+			Usage:     "rm usage",      // TODO
+			UsageText: "rm usage text", // TODO
+			Action: func(ctx *cli.Context) error {
+				return nil
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
