@@ -8,6 +8,29 @@ import (
 )
 
 /*
+ * ScannerAPI
+ */
+
+type mockScannerAPI struct {
+	mock.Mock
+}
+
+func (m *mockScannerAPI) Scan() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *mockScannerAPI) Text() string {
+	args := m.Called()
+	return args.String(0)
+}
+
+func (m *mockScannerAPI) Err() error {
+	args := m.Called()
+	return args.Error(0)
+}
+
+/*
  * mockIOReadCloser
  */
 
