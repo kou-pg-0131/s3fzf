@@ -157,3 +157,33 @@ func TestS3Client_GetObject_ReturnErrorWhenGetObjectFailed(t *testing.T) {
 	assert.EqualError(t, err, "SOMETHING_WRONG")
 	mapi.AssertNumberOfCalls(t, "GetObject", 1)
 }
+
+/*
+ * S3Client.DeleteObject()
+ */
+
+func TestS3Client_DeleteObject_ReturnOutputWhenSucceeded(t *testing.T) {
+	mapi := new(mockS3API)
+	mapi.On("DeleteObject", &s3.DeleteObjectInput{Bucket: aws.String("BUCKET"), Key: aws.String("KEY")}).Return(&s3.DeleteObjectOutput{DeleteMarker: aws.Bool(true)}, nil)
+
+	s3c := &S3Client{s3api: mapi}
+
+	out, err := s3c.DeleteObject("BUCKET", "KEY")
+
+	assert.Equal(t, &s3.DeleteObjectOutput{DeleteMarker: aws.Bool(true)}, out)
+	assert.Nil(t, err)
+	mapi.AssertNumberOfCalls(t, "DeleteObject", 1)
+}
+
+func TestS3Client_DeleteObject_ReturnErrorWhenDeleteObjectFailed(t *testing.T) {
+	mapi := new(mockS3API)
+	mapi.On("DeleteObject", &s3.DeleteObjectInput{Bucket: aws.String("BUCKET"), Key: aws.String("KEY")}).Return((*s3.DeleteObjectOutput)(nil), errors.New("SOMETHING_WRONG"))
+
+	s3c := &S3Client{s3api: mapi}
+
+	out, err := s3c.DeleteObject("BUCKET", "KEY")
+
+	assert.Nil(t, out)
+	assert.EqualError(t, err, "SOMETHING_WRONG")
+	mapi.AssertNumberOfCalls(t, "DeleteObject", 1)
+}

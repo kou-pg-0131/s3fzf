@@ -69,3 +69,15 @@ func (c *S3Client) GetObject(bucket, key string) (*s3.GetObjectOutput, error) {
 
 	return resp, nil
 }
+
+// DeleteObject .
+func (c *S3Client) DeleteObject(bucket, key string) (*s3.DeleteObjectOutput, error) {
+	resp, err := c.s3api.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: &bucket,
+		Key:    &key,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

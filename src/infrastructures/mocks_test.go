@@ -39,6 +39,11 @@ func (m *mockS3API) GetObject(i *s3.GetObjectInput) (*s3.GetObjectOutput, error)
 	return args.Get(0).(*s3.GetObjectOutput), args.Error(1)
 }
 
+func (m *mockS3API) DeleteObject(i *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error) {
+	args := m.Called(i)
+	return args.Get(0).(*s3.DeleteObjectOutput), args.Error(1)
+}
+
 /*
  * fzf
  */

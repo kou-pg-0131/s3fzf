@@ -12,4 +12,5 @@ type IS3Client interface {
 	GetBucketLocation(bucket string) (*s3.GetBucketLocationOutput, error)
 	ListObjects(bucket string, tkn *string) (*s3.ListObjectsV2Output, error)
 	GetObject(bucket, key string) (*s3.GetObjectOutput, error)
+	DeleteObject(bucket, key string) (*s3.DeleteObjectOutput, error)
 }
