@@ -64,6 +64,11 @@ func (m *mockTermbox) Close() {
 	m.Called()
 }
 
+func (m *mockTermbox) Sync() error {
+	args := m.Called()
+	return args.Error(0)
+}
+
 /*
  * os
  */
