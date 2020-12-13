@@ -79,7 +79,6 @@ func (c *S3Controller) FindBucket() (*s3.Bucket, error) {
 
 	select {
 	case err := <-chlserr:
-		c.fzf.Sync()
 		c.fzf.Close()
 		return nil, err
 	case err := <-chfderr:
@@ -148,7 +147,6 @@ func (c *S3Controller) FindObject(bucket string) (*s3.Object, error) {
 
 	select {
 	case err := <-chlserr:
-		c.fzf.Sync()
 		c.fzf.Close()
 		return nil, err
 	case err := <-chfderr:

@@ -20,7 +20,6 @@ func Test_NewFZF_ReturnFZF(t *testing.T) {
 
 	assert.Equal(t, reflect.ValueOf(fzf.Find).Pointer(), reflect.ValueOf(f.fzfFind).Pointer())
 	assert.Equal(t, reflect.ValueOf(termbox.Close).Pointer(), reflect.ValueOf(f.termboxClose).Pointer())
-	assert.Equal(t, reflect.ValueOf(termbox.Sync).Pointer(), reflect.ValueOf(f.termboxSync).Pointer())
 }
 
 /*
@@ -66,32 +65,4 @@ func TestFZF_Close(t *testing.T) {
 	f.Close()
 
 	mbox.AssertNumberOfCalls(t, "Close", 1)
-}
-
-/*
- * FZF.Sync()
- */
-
-func TestFZF_Sync_ReturnNilWhenSucceeded(t *testing.T) {
-	mbox := new(mockTermbox)
-	mbox.On("Sync").Return(nil)
-
-	f := &FZF{termboxSync: mbox.Sync}
-
-	err := f.Sync()
-
-	assert.Nil(t, err)
-	mbox.AssertNumberOfCalls(t, "Sync", 1)
-}
-
-func TestFZF_Sync_ReturnErrorWhenSyncFailed(t *testing.T) {
-	mbox := new(mockTermbox)
-	mbox.On("Sync").Return(errors.New("SOMETHING_WRONG"))
-
-	f := &FZF{termboxSync: mbox.Sync}
-
-	err := f.Sync()
-
-	assert.EqualError(t, err, "SOMETHING_WRONG")
-	mbox.AssertNumberOfCalls(t, "Sync", 1)
 }
