@@ -48,6 +48,7 @@ func main() {
 					Usage:       "File path of the output destination",
 					Aliases:     []string{"o"},
 					Destination: &output,
+					Required:    true,
 				},
 			},
 			Action: func(ctx *cli.Context) error {
