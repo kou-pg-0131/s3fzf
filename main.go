@@ -51,10 +51,10 @@ func main() {
 			Flags: append(defaultFlags, []cli.Flag{
 				&cli.StringFlag{
 					Name:        "output",
-					Usage:       "file path of the output destination. if '-' is specified, output to stdout.",
+					Usage:       "file path of the output destination. if \"-\" is specified, output to stdout.",
+					Value:       "-",
 					Aliases:     []string{"o"},
 					Destination: &output,
-					Required:    true,
 				},
 			}...),
 			Action: func(ctx *cli.Context) error {
