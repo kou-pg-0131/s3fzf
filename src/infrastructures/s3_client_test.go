@@ -14,7 +14,10 @@ import (
  */
 
 func Test_NewS3Client_ReturnS3Client(t *testing.T) {
-	t.Skip()
+	mapi := new(mockS3API)
+	s3c := NewS3Client(mapi)
+
+	assert.Equal(t, mapi, s3c.s3api)
 }
 
 /*
