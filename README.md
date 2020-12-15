@@ -47,7 +47,7 @@ USAGE:
 OPTIONS:
    --bucket value, -b value   name of the bucket containing the objects.
    --profile value, -p value  use a specific profile from your credential file.
-   --output value, -o value   file path of the output destination. if "-" is specified, output to stdout. (default: "-")
+   --output value, -o value   file path of the output destination. if not specified, output to stdout.
    --help, -h                 show help. (default: false)
 ```
 
