@@ -51,8 +51,7 @@ func main() {
 			Flags: append(defaultFlags, []cli.Flag{
 				&cli.StringFlag{
 					Name:        "output",
-					Usage:       "file path of the output destination. if \"-\" is specified, output to stdout.",
-					Value:       "-",
+					Usage:       "file path of the output destination. if not specified, output to stdout.",
 					Aliases:     []string{"o"},
 					Destination: &output,
 				},

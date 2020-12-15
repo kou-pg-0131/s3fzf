@@ -30,7 +30,7 @@ func NewFileWriter() *FileWriter {
 // Write .
 func (fw *FileWriter) Write(out string, r io.Reader) error {
 	var w io.Writer
-	if out != "-" {
+	if out != "" {
 		f, err := fw.fileSystem.Create(out)
 		if err != nil {
 			return err
