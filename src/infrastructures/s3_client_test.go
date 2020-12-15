@@ -21,6 +21,18 @@ func Test_NewS3Client_ReturnS3Client(t *testing.T) {
 }
 
 /*
+ * S3Client.SetAPI()
+ */
+
+func TestS3Client_SetAPI(t *testing.T) {
+	mapi := new(mockS3API)
+	s3c := &S3Client{}
+	s3c.SetAPI(mapi)
+
+	assert.Equal(t, mapi, s3c.s3api)
+}
+
+/*
  * S3Client.ListBuckets()
  */
 
