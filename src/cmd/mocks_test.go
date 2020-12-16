@@ -44,7 +44,7 @@ func (m *mockScanner) Scan() (string, error) {
 }
 
 /*
- * mockIOReadCloser
+ * io.ReadCloser
  */
 
 type mockIOReadCloser struct {
@@ -62,7 +62,7 @@ func (m *mockIOReadCloser) Close() error {
 }
 
 /*
- * mockS3Controller
+ * S3Controller
  */
 
 type mockS3Controller struct {
@@ -82,4 +82,40 @@ func (m *mockS3Controller) FindObject(bucket string) (*s3.Object, error) {
 func (m *mockS3Controller) GetObject(bucket, key string) (io.ReadCloser, error) {
 	args := m.Called(bucket, key)
 	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
+/*
+ * FileSystem
+ */
+
+type mockFileSystem struct {
+	mock.Mock
+}
+
+func (m *mockFileSystem) Copy(dest io.Writer, src io.Reader) error {
+	args := m.Called(dest, src)
+	return args.Error(0)
+}
+
+func (m *mockFileSystem) Create(path string) (io.WriteCloser, error) {
+	args := m.Called(path)
+	return args.Get(0).(io.WriteCloser), args.Error(1)
+}
+
+/*
+ * io.WriteCloser
+ */
+
+type mockIOWriteCloser struct {
+	mock.Mock
+}
+
+func (m *mockIOWriteCloser) Write(p []byte) (n int, err error) {
+	args := m.Called(p)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *mockIOWriteCloser) Close() error {
+	args := m.Called()
+	return args.Error(0)
 }
