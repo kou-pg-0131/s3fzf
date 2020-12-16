@@ -44,6 +44,32 @@ func (m *mockScanner) Scan() (string, error) {
 }
 
 /*
+ * Confirmer
+ */
+
+type mockConfirmer struct {
+	mock.Mock
+}
+
+func (m *mockConfirmer) Confirm(msg string) (bool, error) {
+	args := m.Called(msg)
+	return args.Bool(0), args.Error(1)
+}
+
+/*
+ * FileWriter
+ */
+
+type mockFileWriter struct {
+	mock.Mock
+}
+
+func (m *mockFileWriter) Write(out string, r io.Reader) error {
+	args := m.Called(out, r)
+	return args.Error(0)
+}
+
+/*
  * io.ReadCloser
  */
 
@@ -82,6 +108,11 @@ func (m *mockS3Controller) FindObject(bucket string) (*s3.Object, error) {
 func (m *mockS3Controller) GetObject(bucket, key string) (io.ReadCloser, error) {
 	args := m.Called(bucket, key)
 	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
+func (m *mockS3Controller) DeleteObject(bucket, key string) error {
+	args := m.Called(bucket, key)
+	return args.Error(0)
 }
 
 /*
